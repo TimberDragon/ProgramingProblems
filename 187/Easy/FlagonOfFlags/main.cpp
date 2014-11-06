@@ -37,7 +37,7 @@ int main(int argc, char** argv) {
                 
                 indexOfSplit = input.find_first_of(":");
                 
-                shortFlag = input.substr(0,indexOfSplit-1);
+                shortFlag = input.substr(0,indexOfSplit);
                 longFlag = input.substr(indexOfSplit+1);
                 
                 shortFlags[shortFlag] = longFlag;
