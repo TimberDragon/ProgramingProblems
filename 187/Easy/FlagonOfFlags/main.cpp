@@ -17,7 +17,7 @@ using namespace std;
  */
 int main(int argc, char** argv) {
     
-    string commandLine;
+    string commandLine = "";
     int numberOfInputs;
     std::map<string,string> shortFlags;
     std::map<string,string> longFlags;
@@ -38,15 +38,29 @@ int main(int argc, char** argv) {
                 indexOfSplit = input.find_first_of(":");
                 
                 shortFlag = input.substr(0,indexOfSplit);
-                longFlag = input.substr(indexOfSplit+1);
                 
                 shortFlags[shortFlag] = longFlag;
-                longFlags[longFlag] = shortFlag;
             }
         }
     }
     
     cin>>commandLine;
+    while(commandLine.compare("\n") != 0)
+    {
+        if(commandLine.find("--") != string::npos)
+        {
+            cout<<"Flag: "<<commandLine.substr(2)<<endl;
+        }else if(commandLine.find("-") != string::npos){
+            for(int i = 1; i < commandLine.length(); i++)
+            {
+                string shortFlag = commandLine.substr(i,i);
+                cout<<"Flag: " <<shortFlags[shortFlag]<<endl;
+            }
+        }else{
+            cout<<"Parameter: "<<commandLine<<endl;
+        }
+        cin>>commandLine;
+    }
     
     return 0;
 }
