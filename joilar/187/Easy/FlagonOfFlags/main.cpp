@@ -23,9 +23,9 @@ using std::stringstream;
 //========================================
 
 struct Flag {
-	string short_form = "";
-	string long_form = "";
-	bool accepts_parameter = false;
+    string short_form = "";
+    string long_form = "";
+    bool accepts_parameter = false;
 };
 
 //========================================
@@ -36,50 +36,50 @@ struct Flag {
 //========================================
 
 class Flags {
-	private:
-		std::map< string, std::shared_ptr<Flag> > flags;
-	public:
-		Flags(istream&);
+    private:
+        std::map< string, std::shared_ptr<Flag> > flags;
+    public:
+        Flags(istream&);
 
-		auto begin () -> decltype( flags.begin() ) { return flags.begin(); }
-		auto end () -> decltype( flags.end() ) { return flags.end(); }
+        auto begin () -> decltype( flags.begin() ) { return flags.begin(); }
+        auto end () -> decltype( flags.end() ) { return flags.end(); }
 
-		auto find (const string& key) -> decltype( flags.end() )
-			{ return flags.find(key); }
+        auto find (const string& key) -> decltype( flags.end() )
+            { return flags.find(key); }
 
-		auto find (const char key) -> decltype( flags.end() )
-			{ string s; s = key; return flags.find(s); }
+        auto find (const char key) -> decltype( flags.end() )
+            { string s; s = key; return flags.find(s); }
 
-		std::shared_ptr<Flag> operator[] (const string& key) { return flags[key]; }
-		std::shared_ptr<Flag> operator[] (const char key)
-			{ string s; s = key; return flags[s]; }
+        std::shared_ptr<Flag> operator[] (const string& key) { return flags[key]; }
+        std::shared_ptr<Flag> operator[] (const char key)
+            { string s; s = key; return flags[s]; }
 };
 
 Flags::Flags(istream& in) {
-	// Get the number of lines to read to build our table of flags.
-	string line;
-	std::getline(in, line);
-	int num_lines = std::stoi(line);
+    // Get the number of lines to read to build our table of flags.
+    string line;
+    std::getline(in, line);
+    int num_lines = std::stoi(line);
 
-	// Read the lines into our table.
-	while (num_lines > 0) {
-		std::getline(in, line);
-		auto flag = std::make_shared<Flag> ();
+    // Read the lines into our table.
+    while (num_lines > 0) {
+        std::getline(in, line);
+        auto flag = std::make_shared<Flag> ();
 
-		if (line[0] == '*') {
-			flag->accepts_parameter = true;
-			line.erase(0, 1);
-		}
+        if (line[0] == '*') {
+            flag->accepts_parameter = true;
+            line.erase(0, 1);
+        }
 
-		int delim_pos = line.find(':');
-		flag->short_form = line.substr(0, delim_pos);
-		flag->long_form = line.substr(delim_pos + 1);
+        int delim_pos = line.find(':');
+        flag->short_form = line.substr(0, delim_pos);
+        flag->long_form = line.substr(delim_pos + 1);
 
-		flags[ flag->short_form ] = flag;
-		flags[ flag->long_form ] = flag;
+        flags[ flag->short_form ] = flag;
+        flags[ flag->long_form ] = flag;
 
-		num_lines--;
-	}
+        num_lines--;
+    }
 }
 
 //========================================
@@ -90,8 +90,8 @@ Flags::Flags(istream& in) {
 //========================================
 
 struct Argument {
-	string flag = "";
-	string parameter = "";
+    string flag = "";
+    string parameter = "";
 };
 
 //========================================
@@ -102,98 +102,98 @@ struct Argument {
 //========================================
 
 class Arguments {
-	private:
-		std::vector< std::shared_ptr<Argument> > arguments;
-	public:
-		Arguments(istream&, Flags&);
-		friend ostream& operator<< (ostream& out, const Arguments& args);
+    private:
+        std::vector< std::shared_ptr<Argument> > arguments;
+    public:
+        Arguments(istream&, Flags&);
+        friend ostream& operator<< (ostream& out, const Arguments& args);
 };
 
 Arguments::Arguments(istream& in, Flags& flags) {
-	string line;
-	std::getline(in, line);
-	stringstream line_ss(line);
+    string line;
+    std::getline(in, line);
+    stringstream line_ss(line);
 
-	std::vector<string> tokens;
-	string token;
+    std::vector<string> tokens;
+    string token;
 
-	while ( getline(line_ss, token, ' ') ) {
-		tokens.push_back(token);
-	}
+    while ( getline(line_ss, token, ' ') ) {
+        tokens.push_back(token);
+    }
 
-	for ( auto it = tokens.begin(); it != tokens.end(); it++ ) {
-		token = *it;
+    for ( auto it = tokens.begin(); it != tokens.end(); it++ ) {
+        token = *it;
 
-		// Figure out whether each token is a:
-		// short form flag - prefix '-'
-		// long form flag - prefix '--'
-		// parameter - no prefix
-		if ( token[0] == '-' ) {
-			if ( token[1] == '-' ) {
-				// prefix is '--' - this is a long form flag
-				token.erase(0, 2); // remove prefix
+        // Figure out whether each token is a:
+        // short form flag - prefix '-'
+        // long form flag - prefix '--'
+        // parameter - no prefix
+        if ( token[0] == '-' ) {
+            if ( token[1] == '-' ) {
+                // prefix is '--' - this is a long form flag
+                token.erase(0, 2); // remove prefix
 
-				auto argument = std::make_shared<Argument> ();
-				int delim_pos = token.find('=');
+                auto argument = std::make_shared<Argument> ();
+                int delim_pos = token.find('=');
 
-				argument->flag = token.substr(0, delim_pos);
+                argument->flag = token.substr(0, delim_pos);
 
-				auto flag_it = flags.find( argument->flag );
+                auto flag_it = flags.find( argument->flag );
 
-				if (flag_it != flags.end()) {
-					auto flag = flag_it->second;
-					if (flag->accepts_parameter) {
-						argument->parameter = token.substr(delim_pos + 1);
-					}
-				}
+                if (flag_it != flags.end()) {
+                    auto flag = flag_it->second;
+                    if (flag->accepts_parameter) {
+                        argument->parameter = token.substr(delim_pos + 1);
+                    }
+                }
 
-				arguments.push_back(argument);
-			} else {
-				// prefix is '-' - this token is one or more short form flags
-				token.erase(0, 1); // remove prefix
+                arguments.push_back(argument);
+            } else {
+                // prefix is '-' - this token is one or more short form flags
+                token.erase(0, 1); // remove prefix
 
-				for ( auto c = token.begin(); c != token.end(); c++ ) {
-					auto flag_it = flags.find( *c );
-					if (flag_it != flags.end()) {
-						auto flag = flag_it->second;
-						auto argument = std::make_shared<Argument> ();
+                for ( auto c = token.begin(); c != token.end(); c++ ) {
+                    auto flag_it = flags.find( *c );
+                    if (flag_it != flags.end()) {
+                        auto flag = flag_it->second;
+                        auto argument = std::make_shared<Argument> ();
 
-						argument->flag = flag->long_form;
+                        argument->flag = flag->long_form;
 
-						if (flag->accepts_parameter) {
-							it++;
-							argument->parameter = *it;
-						}
+                        if (flag->accepts_parameter) {
+                            it++;
+                            argument->parameter = *it;
+                        }
 
-						arguments.push_back(argument);
-					}
-				}
-			}
-		} else {
-			// no prefix - this is a parameter to the program
-			auto argument = std::make_shared<Argument> ();
-			argument->parameter = token;
-			arguments.push_back(argument);
-		}
-	}
+                        arguments.push_back(argument);
+                    }
+                }
+            }
+        } else {
+            // no prefix - this is a parameter to the program
+            auto argument = std::make_shared<Argument> ();
+            argument->parameter = token;
+            arguments.push_back(argument);
+        }
+    }
 }
 
 ostream& operator<< (ostream& out, const Arguments& args) {
-	for ( auto it = args.arguments.begin(); it != args.arguments.end(); it++ ) {
-		auto arg = *it;
-		if ( arg->flag != "" ) {
-			out << "flag: " << arg->flag;
+    for ( auto it = args.arguments.begin(); it != args.arguments.end(); it++ ) {
+        auto arg = *it;
+        if ( arg->flag != "" ) {
+            out << "flag: " << arg->flag;
 
-			if ( arg->parameter != "" ) {
-				out << " (value: " << arg->parameter << ")";
-			}
+            if ( arg->parameter != "" ) {
+                out << " (value: " << arg->parameter << ")";
+            }
 
-			out << endl;
-		} else if ( arg->parameter != "" ) {
-			out << "parameter: " << arg->parameter << endl;
-		}
-	}
-	return out;
+            out << endl;
+        } else if ( arg->parameter != "" ) {
+            out << "parameter: " << arg->parameter << endl;
+        }
+    }
+    return out;
 }
 
 //========================================
@@ -201,9 +201,9 @@ ostream& operator<< (ostream& out, const Arguments& args) {
 //========================================
 
 int main (int argc, char** argv) {
-	Flags flags(cin);
-	Arguments arguments(cin, flags);
-	cout << arguments << flush;
-	return 0;
+    Flags flags(cin);
+    Arguments arguments(cin, flags);
+    cout << arguments << flush;
+    return 0;
 }
 
