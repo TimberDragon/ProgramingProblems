@@ -34,7 +34,7 @@ int Node::getValue() {
 }
 
 void Node:: setValue(int val) {
-    value = val
+    value = val;
 }
 
 Node::~Node() {

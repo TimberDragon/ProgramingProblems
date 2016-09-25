@@ -19,7 +19,7 @@ LinkedList::~LinkedList() {
     //TODO Delete linked list
 }
 
-LinkedList::DeleteNode(int val) {
+void LinkedList::DeleteNode(int val) {
     Node* previous = NULL;
     Node* current = pHead;
     while(current != NULL) {    
@@ -41,7 +41,7 @@ LinkedList::DeleteNode(int val) {
     return;
 }
 
-LinkedList::DeleteDuplicates() {
+void LinkedList::DeleteDuplicates() {
     
 }
 
